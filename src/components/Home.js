@@ -1,9 +1,35 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import bgsmall from "../Assets/bgsmall.jpg";
 import bglarge from "../Assets/bglarge.jpg";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+
+  // Check if user is logged in
+  const user = localStorage.getItem("user");
+
+  const handlePlayQuizClick = () => {
+    if (!user) {
+      setIsLoginPopupOpen(true); // Open login popup if user is not logged in
+    } else {
+      navigate("/play-quiz");
+    }
+  };
+
+  const handleLearnMaterialClick = () => {
+    if (!user) {
+      setIsLoginPopupOpen(true); // Open login popup if user is not logged in
+    } else {
+      navigate("/learn-materials");
+    }
+  };
+
+  const handleLoginPopupClose = () => {
+    setIsLoginPopupOpen(false); // Close the popup
+  };
+
   return (
     <div
       className="flex flex-col items-center justify-center h-[93vh] md:h-[95vh] lg:h-[92vh] bg-gray-100 bg-cover bg-center"
@@ -44,21 +70,52 @@ const Home = () => {
 
       <div className="flex space-x-4">
         {/* Play Quiz Button */}
-        <Link
-          to="/play-quiz"
+        <button
+          onClick={handlePlayQuizClick}
           className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
         >
           Play Quiz
-        </Link>
+        </button>
 
         {/* Learn Materials Button */}
-        <Link
-          to="/learn-materials"
+        <button
+          onClick={handleLearnMaterialClick}
           className="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
         >
           Learn Materials
-        </Link>
+        </button>
       </div>
+
+      {/* Login Popup */}
+      {isLoginPopupOpen && (
+        <div
+          className="fixed inset-0 flex justify-center items-center bg-gray-600 bg-opacity-50"
+          onClick={handleLoginPopupClose} // Close the popup when clicking outside
+        >
+          <div
+            className="bg-white p-6 rounded shadow-lg w-80 md:w-[25rem]"
+            onClick={(e) => e.stopPropagation()} // Prevent closing the popup when clicking inside
+          >
+            <h2 className="text-xl font-bold mb-4 text-center">
+              You need to log in to continue
+            </h2>
+            <div className="flex justify-center space-x-4">
+              <Link
+                to="/login"
+                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
+              >
+                Login
+              </Link>
+              <button
+                onClick={handleLoginPopupClose}
+                className="px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition duration-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

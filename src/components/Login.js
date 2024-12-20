@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { login } from "../services/auth"; // Import the login service
 import bgsmall from "../Assets/bgsmall.jpg";
 import bglarge from "../Assets/bglarge.jpg";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { FiEye, FiEyeOff } from "react-icons/fi"; // Import eye icons for visibility toggle
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false); // For loading state
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for toggling password visibility
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const validateForm = () => {
     const newErrors = {};
@@ -31,7 +35,8 @@ const Login = () => {
         const userData = { email, password };
         const result = await login(userData);
         alert(result.message || "Login Successful!"); // Handle success
-        // You can redirect the user or store the token
+        // Redirect to home page with user name
+        navigate(`/home?name=${encodeURIComponent(result.name)}`);
       } catch (error) {
         alert(error.message || "Login failed!"); // Handle error
       } finally {
@@ -62,14 +67,25 @@ const Login = () => {
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
             )}
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <input
-              type="password"
+              type={isPasswordVisible ? "text" : "password"} // Toggle password visibility
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring focus:ring-blue-200"
             />
+            {/* Eye icon to toggle password visibility */}
+            <div
+              className="absolute right-3 top-3 cursor-pointer"
+              onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+            >
+              {isPasswordVisible ? (
+                <FiEyeOff className="text-gray-500" />
+              ) : (
+                <FiEye className="text-gray-500" />
+              )}
+            </div>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}
@@ -81,6 +97,16 @@ const Login = () => {
           >
             {isLoading ? "Logging in..." : "Login"}
           </button>
+
+          <div className="mt-3">
+            Don't have an account?
+            <Link
+              to="/signup"
+              className="hover:underline hover:text-blue-500 ml-1"
+            >
+              Sign up
+            </Link>
+          </div>
         </form>
       </div>
     </div>

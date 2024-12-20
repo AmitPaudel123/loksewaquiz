@@ -2,17 +2,21 @@ import React, { useState } from "react";
 import { signup } from "../services/auth"; // Import the signup service
 import bgsmall from "../Assets/bgsmall.jpg";
 import bglarge from "../Assets/bglarge.jpg";
-
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"; // Import icons
+import { IoClose } from "react-icons/io5"; // Close icon for notification
+import { Link } from "react-router-dom";
 const Signup = () => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Toggle for password visibility
   const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false); // For loading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState(null); // Notification state
 
   const validateForm = () => {
     const newErrors = {};
-    if (!name) newErrors.name = "Full Name is required.";
+    if (!username) newErrors.username = "Username is required.";
     if (!email) newErrors.email = "Email is required.";
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email.";
     if (!password) newErrors.password = "Password is required.";
@@ -28,16 +32,24 @@ const Signup = () => {
       setErrors(validationErrors);
     } else {
       setErrors({});
-      setIsLoading(true); // Set loading state
+      setIsLoading(true);
       try {
-        const userData = { name, email, password };
+        const userData = { username, email, password };
         const result = await signup(userData);
-        alert(result.message || "Signup Successful!"); // Handle success
-        // Redirect user to login page or automatically login
+        setNotification({
+          message: result.message || "Signup Successful!",
+          type: "success",
+        });
+        setUsername("");
+        setEmail("");
+        setPassword("");
       } catch (error) {
-        alert(error.message || "Signup failed!"); // Handle error
+        setNotification({
+          message: error.message || "Signup failed!",
+          type: "error",
+        });
       } finally {
-        setIsLoading(false); // Reset loading state
+        setIsLoading(false);
       }
     }
   };
@@ -49,19 +61,36 @@ const Signup = () => {
         backgroundImage: `url(${window.innerWidth < 768 ? bgsmall : bglarge})`,
       }}
     >
+      {/* Notification Popup */}
+      {notification && (
+        <div
+          className={` top-4 right-4 w-80 md:w-[25rem] p-4 mb-2 rounded shadow-lg text-white ${
+            notification.type === "success" ? "bg-green-400" : "bg-red-400"
+          }`}
+        >
+          <div className="flex justify-between items-center">
+            <p>{notification.message}</p>
+            <IoClose
+              className="cursor-pointer text-xl"
+              onClick={() => setNotification(null)}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="w-11/12 md:w-1/3 bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-6 text-center">Signup</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <input
               type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring focus:ring-blue-200"
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">{errors.username}</p>
             )}
           </div>
           <div className="mb-4">
@@ -76,14 +105,24 @@ const Signup = () => {
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
             )}
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"} // Toggle input type
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border rounded focus:ring focus:ring-blue-200"
             />
+            <span
+              onClick={() => setShowPassword(!showPassword)} // Toggle visibility
+              className="absolute right-4 top-3 cursor-pointer text-gray-500"
+            >
+              {showPassword ? (
+                <AiFillEyeInvisible size={20} />
+              ) : (
+                <AiFillEye size={20} />
+              )}
+            </span>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}
@@ -91,10 +130,20 @@ const Signup = () => {
           <button
             type="submit"
             className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
-            disabled={isLoading} // Disable button during loading
+            disabled={isLoading}
           >
             {isLoading ? "Signing up..." : "Signup"}
           </button>
+
+          <div className="mt-3">
+            Already have an account?
+            <Link
+              to="/login"
+              className="hover:underline hover:text-blue-500 ml-1"
+            >
+              Login
+            </Link>
+          </div>
         </form>
       </div>
     </div>
