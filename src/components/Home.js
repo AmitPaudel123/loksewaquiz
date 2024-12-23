@@ -1,28 +1,40 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import bgsmall from "../Assets/bgsmall.jpg";
 import bglarge from "../Assets/bglarge.jpg";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+  const [userName, setUserName] = useState(""); // State for user's username
 
   // Check if user is logged in
-  const user = localStorage.getItem("user");
+  useEffect(() => {
+    const user = localStorage.getItem("user"); // Get user details from localStorage
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user); // Parse user data if available
+        setUserName(parsedUser.username); // Set user's username if user is logged in
+      } catch (error) {
+        console.error("Error parsing user data from localStorage:", error);
+      }
+    }
+  }, []);
 
   const handlePlayQuizClick = () => {
-    if (!user) {
+    if (!userName) {
       setIsLoginPopupOpen(true); // Open login popup if user is not logged in
     } else {
-      navigate("/play-quiz");
+      navigate("/play-quiz"); // Navigate to quiz page if user is logged in
     }
   };
 
   const handleLearnMaterialClick = () => {
-    if (!user) {
+    if (!userName) {
       setIsLoginPopupOpen(true); // Open login popup if user is not logged in
     } else {
-      navigate("/learn-materials");
+      navigate("/learn-materials"); // Navigate to learning materials page if user is logged in
     }
   };
 
@@ -38,7 +50,7 @@ const Home = () => {
       }}
     >
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">
-        Welcome to Loksewa Quiz App!
+        {userName ? `Welcome, ${userName}!` : "Welcome to Loksewa Quiz App!"}
       </h1>
       <h2 className="md:text-lg md:text-center text-gray-700 md:w-[85%] mb-8 px-4">
         Loksewa Quiz App is designed to help you prepare for the Loksewa exams

@@ -1,5 +1,6 @@
-const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -20,6 +21,7 @@ exports.registerUser = async (req, res) => {
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
+    console.error("Error during registration:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };
@@ -49,6 +51,7 @@ exports.loginUser = async (req, res) => {
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
+    console.error("Error during login:", error);
     res.status(500).json({ message: "Server error", error });
   }
 };

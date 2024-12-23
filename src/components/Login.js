@@ -35,7 +35,7 @@ const Login = () => {
         const userData = { email, password };
         const result = await login(userData); // Call the login service
         alert(result.message || "Login Successful!"); // Show success alert
-        navigate(`/home?name=${encodeURIComponent(result.name)}`); // Navigate to home page
+        navigate(`/?name=${encodeURIComponent(result.name)}`); // Navigate to home page
       } catch (error) {
         // Show error alert
         alert(
