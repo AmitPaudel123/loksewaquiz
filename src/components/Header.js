@@ -10,7 +10,7 @@ const Header = () => {
       <div>
         <Link
           to="/login"
-          className="mr-4 px-4 py-2 bg-white text-blue-600 text-lg rounded"
+          className="mr-4 px-4 py-2 bg-white text-blue-600 rounded"
         >
           Login
         </Link>

@@ -33,12 +33,14 @@ const Login = () => {
       setIsLoading(true); // Set loading state
       try {
         const userData = { email, password };
-        const result = await login(userData);
-        alert(result.message || "Login Successful!"); // Handle success
-        // Redirect to home page with user name
-        navigate(`/home?name=${encodeURIComponent(result.name)}`);
+        const result = await login(userData); // Call the login service
+        alert(result.message || "Login Successful!"); // Show success alert
+        navigate(`/home?name=${encodeURIComponent(result.name)}`); // Navigate to home page
       } catch (error) {
-        alert(error.message || "Login failed!"); // Handle error
+        // Show error alert
+        alert(
+          error.response?.data?.message || "Login failed! Please try again."
+        );
       } finally {
         setIsLoading(false); // Reset loading state
       }
@@ -55,6 +57,7 @@ const Login = () => {
       <div className="w-11/12 md:w-1/3 bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit}>
+          {/* Email Field */}
           <div className="mb-4">
             <input
               type="email"
@@ -67,9 +70,11 @@ const Login = () => {
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
             )}
           </div>
+
+          {/* Password Field */}
           <div className="mb-4 relative">
             <input
-              type={isPasswordVisible ? "text" : "password"} // Toggle password visibility
+              type={isPasswordVisible ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -90,6 +95,8 @@ const Login = () => {
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
             )}
           </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
@@ -98,8 +105,9 @@ const Login = () => {
             {isLoading ? "Logging in..." : "Login"}
           </button>
 
-          <div className="mt-3">
-            Don't have an account?
+          {/* Sign Up Link */}
+          <div className="mt-3 text-center">
+            Don't have an account?{" "}
             <Link
               to="/signup"
               className="hover:underline hover:text-blue-500 ml-1"
