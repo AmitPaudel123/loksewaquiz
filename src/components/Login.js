@@ -4,6 +4,7 @@ import bgsmall from "../Assets/bgsmall.jpg";
 import bglarge from "../Assets/bglarge.jpg";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import { FiEye, FiEyeOff } from "react-icons/fi"; // Import eye icons for visibility toggle
+import { IoClose } from "react-icons/io5"; // Close icon for notification
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false); // For loading state
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for toggling password visibility
+  const [notification, setNotification] = useState(null); // Notification state
   const navigate = useNavigate(); // Initialize useNavigate
 
   const validateForm = () => {
@@ -34,13 +36,17 @@ const Login = () => {
       try {
         const userData = { email, password };
         const result = await login(userData); // Call the login service
-        alert(result.message || "Login Successful!"); // Show success alert
+        setNotification({
+          message: result.message || "Login Successful!",
+          type: "success",
+        });
         navigate(`/?name=${encodeURIComponent(result.name)}`); // Navigate to home page
       } catch (error) {
-        // Show error alert
-        alert(
-          error.response?.data?.message || "Login failed! Please try again."
-        );
+        setNotification({
+          message:
+            error.response?.data?.message || "Login failed! Please try again.",
+          type: "error",
+        });
       } finally {
         setIsLoading(false); // Reset loading state
       }
@@ -54,6 +60,23 @@ const Login = () => {
         backgroundImage: `url(${window.innerWidth < 768 ? bgsmall : bglarge})`,
       }}
     >
+      {/* Notification Popup */}
+      {notification && (
+        <div
+          className={`top-4 right-4 w-80 md:w-[25rem] p-4 mb-2 rounded shadow-lg text-white ${
+            notification.type === "success" ? "bg-green-400" : "bg-red-400"
+          }`}
+        >
+          <div className="flex justify-between items-center">
+            <p>{notification.message}</p>
+            <IoClose
+              className="cursor-pointer text-xl"
+              onClick={() => setNotification(null)}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="w-11/12 md:w-1/3 bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
         <form onSubmit={handleSubmit}>

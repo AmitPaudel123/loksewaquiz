@@ -5,6 +5,7 @@ import bglarge from "../Assets/bglarge.jpg";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"; // Import icons
 import { IoClose } from "react-icons/io5"; // Close icon for notification
 import { Link } from "react-router-dom";
+
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -36,10 +37,17 @@ const Signup = () => {
       try {
         const userData = { username, email, password };
         const result = await signup(userData);
+
+        // Store user data in localStorage
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        // Display success notification
         setNotification({
           message: result.message || "Signup Successful!",
           type: "success",
         });
+
+        // Clear form fields
         setUsername("");
         setEmail("");
         setPassword("");

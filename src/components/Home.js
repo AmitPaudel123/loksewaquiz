@@ -8,6 +8,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const [userName, setUserName] = useState(""); // State for user's username
+  const [redirectAfterLogin, setRedirectAfterLogin] = useState(""); // State to hold the target page after login
 
   // Check if user is logged in
   useEffect(() => {
@@ -24,6 +25,7 @@ const Home = () => {
 
   const handlePlayQuizClick = () => {
     if (!userName) {
+      setRedirectAfterLogin("/play-quiz"); // Set redirect target if not logged in
       setIsLoginPopupOpen(true); // Open login popup if user is not logged in
     } else {
       navigate("/play-quiz"); // Navigate to quiz page if user is logged in
@@ -32,6 +34,7 @@ const Home = () => {
 
   const handleLearnMaterialClick = () => {
     if (!userName) {
+      setRedirectAfterLogin("/learn-materials"); // Set redirect target if not logged in
       setIsLoginPopupOpen(true); // Open login popup if user is not logged in
     } else {
       navigate("/learn-materials"); // Navigate to learning materials page if user is logged in
@@ -42,9 +45,18 @@ const Home = () => {
     setIsLoginPopupOpen(false); // Close the popup
   };
 
+  // Function to handle successful login
+  const handleLoginSuccess = () => {
+    // If login is successful, redirect to the target page
+    if (redirectAfterLogin) {
+      navigate(redirectAfterLogin);
+    }
+    setIsLoginPopupOpen(false); // Close the login popup after successful login
+  };
+
   return (
     <div
-      className="flex flex-col items-center justify-center h-[93vh] md:h-[95vh] lg:h-[92vh] bg-gray-100 bg-cover bg-center"
+      className="flex flex-col items-center justify-center h-screen bg-gray-100 bg-cover bg-center"
       style={{
         backgroundImage: `url(${window.innerWidth < 768 ? bgsmall : bglarge})`,
       }}
@@ -115,6 +127,7 @@ const Home = () => {
               <Link
                 to="/login"
                 className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
+                onClick={handleLoginPopupClose} // Close popup if user navigates to login
               >
                 Login
               </Link>
